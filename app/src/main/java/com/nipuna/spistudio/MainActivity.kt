@@ -86,7 +86,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.withTransform
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -195,14 +195,10 @@ fun NatureBackground() {
                 cubicTo(-s * 0.7f, s * 0.6f, -s * 0.9f, -s * 0.5f, 0f, -s)
                 close()
             }
-            translateTo(x, y) { rotate(ang, Offset.Zero) { drawPath(path, leafColor.copy(alpha = 0.28f)) } }
+            withTransform({ translate(x, y); rotate(ang, Offset.Zero) }) { drawPath(path, leafColor.copy(alpha = 0.28f)) }
         }
     }
 }
-
-private fun androidx.compose.ui.graphics.drawscope.DrawScope.translateTo(
-    x: Float, y: Float, block: androidx.compose.ui.graphics.drawscope.DrawScope.() -> Unit
-) = androidx.compose.ui.graphics.drawscope.withTransform({ translate(x, y) }, block)
 
 // liquid-glass bubble button: translucent body, specular highlight, glowing rim, squishy press
 @Composable
