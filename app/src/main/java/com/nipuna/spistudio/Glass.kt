@@ -47,7 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-enum class Ico { Folder, Scan, Save, Bolt, Image, Skip }
+enum class Ico { Folder, Scan, Save, Bolt, Image, Skip, Sound, Mute }
 
 @Composable
 fun GlassIcon(kind: Ico, modifier: Modifier = Modifier, color: Color = Color.White) {
@@ -93,6 +93,20 @@ fun GlassIcon(kind: Ico, modifier: Modifier = Modifier, color: Color = Color.Whi
                     lineTo(s * 0.68f, s * 0.58f); lineTo(s * 0.82f, s * 0.74f)
                 }
                 drawPath(p, color, style = st)
+            }
+            Ico.Sound, Ico.Mute -> {
+                val body = Path().apply {
+                    moveTo(s * 0.12f, s * 0.40f); lineTo(s * 0.30f, s * 0.40f); lineTo(s * 0.50f, s * 0.22f)
+                    lineTo(s * 0.50f, s * 0.78f); lineTo(s * 0.30f, s * 0.60f); lineTo(s * 0.12f, s * 0.60f); close()
+                }
+                drawPath(body, color, style = st)
+                if (kind == Ico.Sound) {
+                    drawArc(color, -45f, 90f, false, Offset(s * 0.34f, s * 0.34f), Size(s * 0.32f, s * 0.32f), style = st)
+                    drawArc(color, -45f, 90f, false, Offset(s * 0.28f, s * 0.22f), Size(s * 0.56f, s * 0.56f), style = st)
+                } else {
+                    drawLine(color, Offset(s * 0.62f, s * 0.38f), Offset(s * 0.86f, s * 0.62f), strokeWidth = sw, cap = StrokeCap.Round)
+                    drawLine(color, Offset(s * 0.86f, s * 0.38f), Offset(s * 0.62f, s * 0.62f), strokeWidth = sw, cap = StrokeCap.Round)
+                }
             }
             Ico.Skip -> {
                 val a = Path().apply { moveTo(s * 0.25f, s * 0.25f); lineTo(s * 0.50f, s * 0.50f); lineTo(s * 0.25f, s * 0.75f) }

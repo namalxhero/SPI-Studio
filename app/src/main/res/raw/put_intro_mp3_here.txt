@@ -1,0 +1,3 @@
+Copy your song here and name it exactly:  intro.mp3
+(lowercase, this folder: app/src/main/res/raw/). It plays in a loop with a slow fade-in.
+Without intro.mp3 the app simply has no music.

@@ -12,5 +12,9 @@ Build: push to GitHub, the workflow compiles `spitool` with the NDK, then Gradle
 
 ## UI
 * 10 living nature moods (forest, sakura, aurora, ocean, sunset, stars, autumn, rain, snow, fireflies),
-  one per minute with a slow 6 s cross-fade. Tap the mood chip to skip to the next one.
+  one per minute with a slow 6 s cross-fade. Moods change on their own, nothing to tap.
 * Liquid-glass bubble buttons with custom icons (no icon libraries).
+
+## Music
+Put your song at `app/src/main/res/raw/intro.mp3` (exact lowercase name). It loops with a slow fade-in;
+the "Music on/off" bubble appears only when the file exists.

@@ -11,6 +11,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -58,8 +61,12 @@ private val Mint = Color(0xFF3DDC97)
 private val Pink = Color(0xFFFF6FB5)
 
 class MainActivity : ComponentActivity() {
+    private lateinit var music: MusicPlayer
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        music = MusicPlayer(this)
+        music.start()
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
@@ -74,9 +81,24 @@ class MainActivity : ComponentActivity() {
                     onBackground = Color.White
                 )
             ) {
-                Surface(color = Color.Black, modifier = Modifier.fillMaxSize()) { App() }
+                Surface(color = Color.Black, modifier = Modifier.fillMaxSize()) { App(music) }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        music.pause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        music.resume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        music.release()
     }
 }
 
@@ -99,31 +121,35 @@ fun Preview(bmp: Bitmap) {
 }
 
 @Composable
-fun App() {
+fun App(music: MusicPlayer) {
     var tab by remember { mutableIntStateOf(0) }
-    var skip by remember { mutableIntStateOf(0) }
-    var moodName by remember { mutableStateOf("") }
+    var muted by remember { mutableStateOf(false) }
+    var started by remember { mutableStateOf(false) }
+    val vol by animateFloatAsState(if (!started || muted) 0f else 0.85f, animationSpec = tween(2500), label = "vol")
+    LaunchedEffect(Unit) { started = true }
+    LaunchedEffect(vol) { music.volume(vol) }
     Box(Modifier.fillMaxSize()) {
-        MoodBackground(skipSignal = skip, onName = { moodName = it })
+        MoodBackground(skipSignal = 0, onName = { })
         Column(
             Modifier
                 .fillMaxSize()
                 .systemBarsPadding()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text("SPI Studio", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                    Text("Samsung MAET .spi decode / encode  -  by xBooM", fontSize = 11.sp, color = Color(0xFFC4C9D0))
+            Column(Modifier.fillMaxWidth()) {
+                Text("SPI Studio", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text("Samsung MAET .spi decode / encode  -  by xBooM", fontSize = 11.sp, color = Color(0xFFC4C9D0))
+                if (music.available) {
+                    Spacer(Modifier.height(8.dp))
+                    BubbleButton(
+                        text = if (muted) "Music off" else "Music on",
+                        icon = if (muted) Ico.Mute else Ico.Sound,
+                        tint = Mint,
+                        onClick = { muted = !muted },
+                        phase = 4,
+                        compact = true
+                    )
                 }
-                BubbleButton(
-                    text = moodName,
-                    icon = Ico.Skip,
-                    tint = Violet,
-                    onClick = { skip += 1 },
-                    phase = 3,
-                    compact = true
-                )
             }
             Spacer(Modifier.height(14.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
